@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart'; // ✅ هذا الصح
 import 'dashboard_page.dart';
 import 'map_page.dart';
+import 'Detected_Faces.dart';
 
 class IncidentDetailsPage extends StatelessWidget {
   final String title;
@@ -140,7 +141,18 @@ class IncidentDetailsPage extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 15),
-
+GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DetectedFacesPage(
+  incidentId: incidentId,
+),
+      ),
+    );
+  },
+  child:
                 buildCard(
                   isHandled
                       ? "Face Detection Results"
@@ -158,6 +170,7 @@ class IncidentDetailsPage extends StatelessWidget {
                       )
                     ],
                   ),
+                ),
                 ),
 
                 const Spacer(),

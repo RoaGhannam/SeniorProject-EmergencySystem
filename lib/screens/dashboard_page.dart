@@ -6,11 +6,50 @@ import 'handled_page.dart';
 import 'settings_page.dart';
 import 'login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'alert_page.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   final String userId;
 
   DashboardPage({required this.userId});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+
+  bool firstLoad = true;
+
+  @override
+  late DateTime openTime;
+  void initState() {
+    super.initState();
+    openTime = DateTime.now();
+
+    FirebaseDatabase.instance
+    .ref("incidents")
+    .onChildAdded
+    .listen((event) {
+
+  final data = event.snapshot.value as Map?;
+
+  if (data == null) return;
+
+  String timestamp = data["timestamp"] ?? "";
+
+  DateTime incidentTime = DateTime.parse(timestamp);
+
+  if (incidentTime.isAfter(openTime)) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AlertPage(),
+      ),
+    );
+  }
+});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +154,7 @@ class DashboardPage extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) =>
-                                    SettingsPage(userId: userId),
-                              ),
+SettingsPage(userId: widget.userId)                              ),
                             );
                           },
                         ),

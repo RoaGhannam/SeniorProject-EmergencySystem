@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class DetectedFacesPage extends StatelessWidget {
+  final String incidentId;
+
+  const DetectedFacesPage({
+    super.key,
+    required this.incidentId,
+  });
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,14 +25,15 @@ class DetectedFacesPage extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              Row(
-                children: const [
-                  Icon(Icons.arrow_back, color: Colors.white),
-                  SizedBox(width: 8),
-                  Text("Back", style: TextStyle(color: Colors.white)),
-                ],
-              ),
-
+              IconButton(
+  onPressed: () {
+    Navigator.pop(context);
+  },
+  icon: const Icon(
+    Icons.arrow_back,
+    color: Colors.white,
+  ),
+),
               const SizedBox(height: 20),
 
               const Text(
@@ -33,7 +41,10 @@ class DetectedFacesPage extends StatelessWidget {
                 style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
               ),
 
-              const Text("INC-2026-002", style: TextStyle(color: Colors.white70)),
+              Text(
+  incidentId,
+  style: const TextStyle(color: Colors.white70),
+),
 
               const SizedBox(height: 10),
 
@@ -56,14 +67,73 @@ class DetectedFacesPage extends StatelessWidget {
               const SizedBox(height: 20),
 
               Expanded(
-                child: Row(
-                  children: [
-                    Expanded(child: faceCard("FACE-001")),
-                    const SizedBox(width: 15),
-                    Expanded(child: faceCard("FACE-002")),
-                  ],
-                ),
-              ),
+  child: StreamBuilder(
+    stream: FirebaseDatabase.instance
+        .ref("incidents/$incidentId/detectedFaces")
+        .onValue,
+    builder: (context, snapshot) {
+
+      if (!snapshot.hasData) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+
+      final data = snapshot.data!.snapshot.value;
+
+      if (data == null) {
+        return const Center(
+          child: Text(
+            "No Faces Detected",
+            style: TextStyle(color: Colors.white),
+          ),
+        );
+      }
+
+      final faces = data as List;
+
+      return GridView.builder(
+        itemCount: faces.length,
+        gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 15,
+          mainAxisSpacing: 15,
+        ),
+        itemBuilder: (context, index) {
+
+          final face = faces[index];
+          print(face);
+          print(face['image']);
+
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.network(
+  face['image'],
+  fit: BoxFit.cover,
+  errorBuilder: (context, error, stackTrace) {
+    print("ERROR = $error");
+
+    return const Center(
+      child: Text(
+        "Image Error",
+        style: TextStyle(color: Colors.white),
+      ),
+    );
+  },
+),
+            ),
+          );
+        },
+      );
+    },
+  ),
+),
             ],
           ),
         ),
