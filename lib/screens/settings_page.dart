@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'ChangePasswordPage.dart';
 
 class SettingsPage extends StatefulWidget {
+  
   final String userId; // 🔥 نمرر اليوزر الحالي
 
   SettingsPage({required this.userId});
@@ -11,17 +13,41 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-
+  
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+
+  String role = "";
+
+  @override
+void initState() {
+  super.initState();
+  loadUserData();
+}
+
+Future<void> loadUserData() async {
+  final snapshot = await FirebaseDatabase.instance
+      .ref("users")
+      .child(widget.userId)
+      .get();
+
+  if (snapshot.exists) {
+    final data =
+        Map<String, dynamic>.from(snapshot.value as Map);
+
+    setState(() {
+  role = data["Role"]?.toString() ?? "";
+});
+  }
+}
+  
+  
 
   bool hasChanges() {
     return nameController.text.isNotEmpty ||
         phoneController.text.isNotEmpty ||
-        emailController.text.isNotEmpty ||
-        passwordController.text.isNotEmpty;
+        emailController.text.isNotEmpty;
   }
 
   void handleSave() async {
@@ -60,9 +86,9 @@ class _SettingsPageState extends State<SettingsPage> {
         updatedData["Email"] = emailController.text;
       }
 
-      if (passwordController.text.isNotEmpty) {
-        updatedData["Password"] = passwordController.text;
-      }
+      
+      
+      
 
       // ✅ التعديل على اليوزر الصحيح
       await db.child("users").child(widget.userId).update(updatedData);
@@ -74,6 +100,8 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       );
     }
+    
+    
   }
 
   @override
@@ -149,7 +177,40 @@ class _SettingsPageState extends State<SettingsPage> {
                 buildField("Full Name", nameController, Icons.person),
                 buildField("Phone Number", phoneController, Icons.phone),
                 buildField("Email Address", emailController, Icons.email),
-                buildField("Password", passwordController, Icons.lock),
+                buildRoleCard(role),
+                Container(
+  width: double.infinity,
+  margin: EdgeInsets.only(bottom: 20),
+  child: ElevatedButton.icon(
+    icon: Icon(Icons.lock_reset, color: Colors.white),
+    label: Text(
+      "Change Password",
+      style: TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Color(0xFF1A1A1A),
+      foregroundColor: Colors.white,
+      minimumSize: Size(double.infinity, 55),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      side: BorderSide(
+        color: Colors.redAccent.withOpacity(0.5),
+      ),
+    ),
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChangePasswordPage(),
+        ),
+      );
+    },
+  ),
+),
 
                 SizedBox(height: 25),
 
@@ -183,6 +244,198 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
+  Widget buildRoleCard(String role) {
+  String currentRole = role.toString().toLowerCase();
+
+  IconData roleIcon = Icons.security;
+  Color roleColor = Colors.redAccent;
+
+  if (currentRole == "police") {
+    roleIcon = Icons.local_police;
+    roleColor = Colors.redAccent;
+  } else if (currentRole == "ambulance") {
+    roleIcon = Icons.medical_services;
+    roleColor = Colors.redAccent;
+  } else if (currentRole == "firefighter") {
+    roleIcon = Icons.local_fire_department;
+    roleColor = Colors.redAccent;
+  }
+
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 18),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "Role",
+          style: TextStyle(
+            color: Colors.white70,
+            fontSize: 13,
+          ),
+        ),
+        SizedBox(height: 8),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
+          decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.45),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: roleColor.withOpacity(0.6),
+              width: 1.5,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: roleColor.withOpacity(0.2),
+                blurRadius: 10,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: roleColor.withOpacity(0.15),
+                child: Icon(
+                  roleIcon,
+                  color: roleColor,
+                  size: 20,
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  role.isEmpty ? "Unknown" : role,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+// Widget buildRoleCard(String role) {
+//   String currentRole = role.toLowerCase();
+
+//   IconData roleIcon = Icons.security;
+//   Color roleColor = Colors.redAccent;
+
+//   if (currentRole == "police") {
+//     roleIcon = Icons.local_police;
+//     roleColor = Colors.blueAccent;
+//   } else if (currentRole == "ambulance") {
+//     roleIcon = Icons.medical_services;
+//     roleColor = Colors.greenAccent;
+//   } else if (currentRole == "firefighter") {
+//     roleIcon = Icons.local_fire_department;
+//     roleColor = Colors.orangeAccent;
+//   }
+
+//   return Padding(
+//     padding: const EdgeInsets.only(bottom: 18),
+//     child: Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Text(
+//           "Role",
+//           style: TextStyle(
+//             color: Colors.white70,
+//             fontSize: 13,
+//           ),
+//         ),
+
+//         SizedBox(height: 8),
+
+//         Container(
+//           width: double.infinity,
+//           padding: EdgeInsets.all(16),
+//           decoration: BoxDecoration(
+//             gradient: LinearGradient(
+//               colors: [
+//                 roleColor.withOpacity(0.20),
+//                 Colors.black.withOpacity(0.45),
+//               ],
+//               begin: Alignment.topLeft,
+//               end: Alignment.bottomRight,
+//             ),
+//             borderRadius: BorderRadius.circular(16),
+//             border: Border.all(
+//               color: roleColor.withOpacity(0.5),
+//               width: 1.2,
+//             ),
+//             boxShadow: [
+//               BoxShadow(
+//                 color: roleColor.withOpacity(0.15),
+//                 blurRadius: 10,
+//                 offset: Offset(0, 4),
+//               ),
+//             ],
+//           ),
+//           child: Row(
+//             children: [
+//               Container(
+//                 padding: EdgeInsets.all(12),
+//                 decoration: BoxDecoration(
+//                   color: roleColor.withOpacity(0.15),
+//                   borderRadius: BorderRadius.circular(12),
+//                 ),
+//                 child: Icon(
+//                   roleIcon,
+//                   color: roleColor,
+//                   size: 26,
+//                 ),
+//               ),
+
+//               SizedBox(width: 15),
+
+//               Expanded(
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Text(
+//                       role.isEmpty ? "Unknown" : role,
+//                       style: TextStyle(
+//                         color: Colors.white,
+//                         fontSize: 16,
+//                         fontWeight: FontWeight.bold,
+//                       ),
+//                     ),
+
+//                     SizedBox(height: 4),
+
+//                     Text(
+//                       "Authorized Emergency Personnel",
+//                       style: TextStyle(
+//                         color: Colors.white60,
+//                         fontSize: 12,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+
+//               Icon(
+//                 Icons.verified,
+//                 color: roleColor,
+//                 size: 22,
+//               ),
+//             ],
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
 
   Widget buildField(
       String title, TextEditingController controller, IconData icon) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ResetPasswordPage extends StatelessWidget {
 
@@ -8,48 +9,31 @@ class ResetPasswordPage extends StatelessWidget {
   final roleController = TextEditingController();
   final passwordController = TextEditingController();
 
-  Future<void> resetPassword(BuildContext context) async {
-    String email = emailController.text;
-    String phone = phoneController.text;
-    String role = roleController.text;
-    String newPassword = passwordController.text;
+Future<void> resetPassword(BuildContext context) async {
+  String email = emailController.text.trim();
 
-    final db = FirebaseDatabase.instance.ref();
-    final snapshot = await db.child("users").get();
+  try {
+    await FirebaseAuth.instance.sendPasswordResetEmail(
+      email: email,
+    );
 
-    String userKey = "";
-    bool isValid = false;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Password reset email sent. Check your inbox.",
+        ),
+      ),
+    );
 
-    if (snapshot.exists) {
-      final data = snapshot.value as Map;
-
-      data.forEach((key, value) {
-        if (value["Email"] == email &&
-            value["Phone"] == phone &&
-            value["Role"] == role) {
-
-          userKey = key;
-          isValid = true;
-        }
-      });
-    }
-
-    if (isValid) {
-      await db.child("users").child(userKey).update({
-        "Password": newPassword,
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Password updated successfully")),
-      );
-
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Information not correct")),
-      );
-    }
+    Navigator.pop(context);
+  } on FirebaseAuthException catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(e.message ?? "Error"),
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -104,16 +88,6 @@ class ResetPasswordPage extends StatelessWidget {
 
                   buildField("Email", emailController, Icons.email),
                   SizedBox(height: 15),
-
-                  buildField("Phone Number", phoneController, Icons.phone),
-                  SizedBox(height: 15),
-
-                  buildField("Role", roleController, Icons.security),
-                  SizedBox(height: 15),
-
-                  buildField("New Password", passwordController, Icons.lock, isPassword: true),
-
-                  SizedBox(height: 35),
 
                   // 🔴 زر أقوى
                   ElevatedButton(

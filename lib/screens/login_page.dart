@@ -3,71 +3,82 @@ import 'package:firebase_database/firebase_database.dart';
 import '../main.dart';
 import 'dashboard_page.dart';
 import 'resetPassword_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
 
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   final FocusNode passwordFocus = FocusNode();
 
-  Future<void> handleLogin(BuildContext context) async {
-    String username = usernameController.text.trim();
-    String password = passwordController.text.trim();
+  bool hidePassword = true;
 
-    if (username.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Please enter email and password"),
-        ),
-      );
-      return;
-    }
+Future<void> handleLogin(BuildContext context) async {
+  String email = usernameController.text.trim();
+  String password = passwordController.text.trim();
 
-    final db = FirebaseDatabase.instance.ref();
-
-    try {
-      final snapshot = await db.child("users").get();
-
-      bool isFound = false;
-      String currentUserId = ""; // 🔥 جديد
-
-      if (snapshot.exists) {
-        final data = Map<String, dynamic>.from(snapshot.value as Map);
-
-        data.forEach((key, value) {
-          final user = Map<String, dynamic>.from(value);
-
-          if (user["Email"] == username &&
-              user["Password"] == password) {
-            isFound = true;
-            currentUserId = key; // 🔥 حفظ اليوزر
-          }
-        });
-      }
-
-      if (isFound) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DashboardPage(userId: currentUserId), // 🔥 تمرير اليوزر
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Wrong email or password"),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Error connecting to Firebase"),
-        ),
-      );
-    }
+  if (email.isEmpty || password.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Please enter email and password"),
+      ),
+    );
+    return;
   }
+
+  try {
+    // تسجيل دخول من Firebase Authentication
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    // جلب userId من Realtime Database
+    final snapshot =
+        await FirebaseDatabase.instance.ref("users").get();
+
+    String currentUserId = "";
+
+    if (snapshot.exists) {
+      final data =
+          Map<String, dynamic>.from(snapshot.value as Map);
+
+      data.forEach((key, value) {
+        final user = Map<String, dynamic>.from(value);
+
+        if (user["Email"] == email) {
+          currentUserId = key;
+        }
+      });
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DashboardPage(
+          userId: currentUserId,
+        ),
+      ),
+    );
+  } on FirebaseAuthException {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Wrong email or password"),
+      ),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Error: $e"),
+      ),
+    );
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -160,24 +171,39 @@ class LoginPage extends StatelessWidget {
                 SizedBox(height: 20),
 
                 TextField(
-                  controller: passwordController,
-                  focusNode: passwordFocus,
-                  obscureText: true,
-                  style: TextStyle(color: Colors.white),
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (_) {
-                    handleLogin(context);
-                  },
-                  decoration: InputDecoration(
-                    hintText: "Enter your password",
-                    hintStyle: TextStyle(color: Colors.grey),
-                    filled: true,
-                    fillColor: Colors.black.withOpacity(0.4),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                ),
+  controller: passwordController,
+  focusNode: passwordFocus,
+  obscureText: hidePassword,
+  style: TextStyle(color: Colors.white),
+  textInputAction: TextInputAction.done,
+  onSubmitted: (_) {
+    handleLogin(context);
+  },
+  decoration: InputDecoration(
+    hintText: "Enter your password",
+    hintStyle: TextStyle(color: Colors.grey),
+
+    suffixIcon: IconButton(
+  icon: Icon(
+    hidePassword
+        ? Icons.visibility_off
+        : Icons.visibility,
+    color: Colors.white70,
+  ),
+  onPressed: () {
+    setState(() {
+      hidePassword = !hidePassword;
+    });
+  },
+),
+
+    filled: true,
+    fillColor: Colors.black.withOpacity(0.4),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(15),
+    ),
+  ),
+),
 
                 SizedBox(height: 30),
 

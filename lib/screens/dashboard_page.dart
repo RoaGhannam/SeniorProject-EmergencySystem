@@ -5,6 +5,7 @@ import 'responding_page.dart';
 import 'handled_page.dart';
 import 'settings_page.dart';
 import 'login_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class DashboardPage extends StatelessWidget {
   final String userId;
