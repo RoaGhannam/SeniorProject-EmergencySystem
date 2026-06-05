@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart'; // ✅ هذا الص�
 import 'dashboard_page.dart';
 import 'map_page.dart';
 import 'Detected_Faces.dart';
+import 'Video_Download.dart';
 
 class IncidentDetailsPage extends StatelessWidget {
   final String title;
@@ -32,8 +33,28 @@ class IncidentDetailsPage extends StatelessWidget {
             ? const Color(0xFFF57C00)
             : const Color(0xFF2E7D32);
 
-    double testLat = 32.4590;
-    double testLng = 35.3000;
+    return FutureBuilder(
+  future: FirebaseDatabase.instance
+      .ref("incidents/$incidentId/location")
+      .get(),
+  builder: (context, snapshot) {
+
+    if (!snapshot.hasData) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    final location =
+        Map<String, dynamic>.from(snapshot.data!.value as Map);
+
+    double testLat =
+        (location["latitude"] as num).toDouble();
+
+    double testLng =
+        (location["longitude"] as num).toDouble();
 
     return Scaffold(
       body: Container(
@@ -128,42 +149,117 @@ class IncidentDetailsPage extends StatelessWidget {
 
                 const SizedBox(height: 15),
 
-                buildCard(
-                  isHandled ? "Stored Video Evidence" : "Video Evidence",
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: const [
-                      VideoCircle(),
-                      VideoCircle(),
-                      VideoCircle(),
-                    ],
-                  ),
-                ),
+                GestureDetector(
+  onTap: () async {
 
-                const SizedBox(height: 15),
-GestureDetector(
-  onTap: () {
+    final snapshot = await FirebaseDatabase.instance
+.ref("incidents/$incidentId")       
+ .get();
+
+    if (!snapshot.exists || snapshot.value == null) {
+      return;
+    }
+
+    final incidentData =
+    Map<String, dynamic>.from(snapshot.value as Map);
+
+final videoData =
+    Map<String, dynamic>.from(incidentData["video"]);
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => DetectedFacesPage(
-  incidentId: incidentId,
+        builder: (_) => VideoDownloadPage(
+  videoUrl: videoData["videoUrl"],
+  duration: videoData["duration"],
+  format: videoData["format"],
+  timestamp: incidentData["timestamp"],
 ),
       ),
     );
   },
-  child:
-                buildCard(
+  child: buildCard(
+    isHandled ? "Stored Video Evidence" : "Video Evidence",
+    const Center(
+  child: VideoCircle(),
+),
+  ),
+),
+
+                const SizedBox(height: 15),
+GestureDetector(
+  onTap: () async {
+
+    final snapshot = await FirebaseDatabase.instance
+        .ref("incidents/$incidentId/detectedFaces")
+        .get();
+
+    if (!snapshot.exists || snapshot.value == null) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("No faces detected"),
+        ),
+      );
+
+      return;
+    }
+
+    final faces = snapshot.value as List;
+
+    if (faces.isEmpty) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("No faces detected"),
+        ),
+      );
+
+      return;
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DetectedFacesPage(
+          incidentId: incidentId,
+        ),
+      ),
+    );
+  },
+  child: buildCard(
                   isHandled
                       ? "Face Detection Results"
                       : "Face Detection",
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        "Detected Faces\n3",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      StreamBuilder(
+  stream: FirebaseDatabase.instance
+      .ref("incidents/$incidentId/detectedFaces")
+      .onValue,
+  builder: (context, snapshot) {
+
+    int count = 0;
+
+    if (snapshot.hasData &&
+        snapshot.data!.snapshot.value != null) {
+      final faces = snapshot.data!.snapshot.value as List;
+      count = faces.length;
+    }
+
+    return Text(
+      count == 0
+          ? "No Faces Detected"
+          : "Detected Faces\n$count",
+      style: const TextStyle(
+        color: Colors.white,
+      ),
+    );
+    
+  },
+),
+
                       CircleAvatar(
                         backgroundColor: mainColor,
                         child: const Icon(Icons.person, color: Colors.white),
@@ -222,19 +318,22 @@ GestureDetector(
                       style: const TextStyle(
                         color: Color(0xFFFFF3E0),
                         fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                                      ),
+                                       ),
                   ),
-                )
+                ),
               ],
             ),
           ),
         ),
       ),
     );
+  },
+);
   }
 
-  Widget buildCard(String title, Widget child) {
+
+Widget buildCard(String title, Widget child) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(15),

@@ -55,14 +55,38 @@ class DetectedFacesPage extends StatelessWidget {
 
               const SizedBox(height: 12),
 
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.redAccent,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Text("2 Faces Detected", style: TextStyle(color: Colors.white)),
-              ),
+              StreamBuilder(
+  stream: FirebaseDatabase.instance
+      .ref("incidents/$incidentId/detectedFaces")
+      .onValue,
+  builder: (context, snapshot) {
+
+    int count = 0;
+
+    if (snapshot.hasData &&
+        snapshot.data!.snapshot.value != null) {
+      final faces = snapshot.data!.snapshot.value as List;
+      count = faces.length;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.redAccent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        "$count Faces Detected",
+        style: const TextStyle(
+          color: Colors.white,
+        ),
+      ),
+    );
+  },
+),
 
               const SizedBox(height: 20),
 

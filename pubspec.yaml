@@ -25,6 +25,10 @@ dependencies:
 
   # 🔥 إضافة الصوت
   audioplayers: ^5.2.1
+  video_player: ^2.9.2
+
+  flutter_file_downloader: ^1.2.1
+
 
   cupertino_icons: ^1.0.8
 
