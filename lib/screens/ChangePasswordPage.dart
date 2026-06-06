@@ -205,8 +205,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   
                   child: Text(
                     "Update Password",
-                    style: TextStyle(fontSize: 16),
-                  ),
+style: TextStyle(
+    fontSize: 16,
+    color: Colors.white,
+  ),                  ),
                 ),
 
                 SizedBox(height: 12),

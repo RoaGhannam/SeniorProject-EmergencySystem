@@ -8,13 +8,19 @@ class VideoDownloadPage extends StatefulWidget {
 final int duration;
 final String format;
 final String timestamp;
+final List<Color> pageColors;
+final Color mainColor;
+
 
   const VideoDownloadPage({
+    
   super.key,
   required this.videoUrl,
   required this.duration,
   required this.format,
   required this.timestamp,
+  required this.pageColors,
+  required this.mainColor,
 });
 
   @override
@@ -59,15 +65,19 @@ void dispose() {
 }
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0a0a0a), Color(0xFF2b0000), Color(0xFF000000)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: Padding(
+  backgroundColor: Colors.transparent,
+  extendBody: true,
+  body: Container(
+    width: double.infinity,
+    height: double.infinity,
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: widget.pageColors,
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
+    ),
+    child: Padding(
           padding: const EdgeInsets.all(20),
           child: SingleChildScrollView(
   child: Column(
@@ -153,15 +163,31 @@ if (!controller.value.isPlaying)
   onTap: () {
     FileDownloader.downloadFile(
       url: widget.videoUrl,
+      onDownloadCompleted: (path) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Video downloaded successfully",
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+    },
     );
   },
   child: Container(
     width: double.infinity,
     padding: const EdgeInsets.symmetric(vertical: 15),
     decoration: BoxDecoration(
-      gradient: const LinearGradient(
-        colors: [Color(0xFFc62828), Color(0xFFff1744)],
-      ),
+      gradient: LinearGradient(
+  begin: Alignment.centerLeft,
+  end: Alignment.centerRight,
+  colors: [
+    Colors.black,
+    widget.mainColor.withOpacity(0.9),
+    Colors.black,
+  ],
+),
       borderRadius: BorderRadius.circular(14),
     ),
     child: const Center(
@@ -185,9 +211,9 @@ Container(
     color: Colors.black.withOpacity(0.4),
     borderRadius: BorderRadius.circular(14),
     border: Border.all(
-      color: Colors.redAccent,
-      width: 1.5,
-    ),
+  color: widget.mainColor,
+  width: 1.5,
+),
   ),
   child: Column(
     crossAxisAlignment: CrossAxisAlignment.start,

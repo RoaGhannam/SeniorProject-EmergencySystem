@@ -223,8 +223,13 @@ Future<void> loadUserData() async {
                     ),
                   ),
                   onPressed: handleSave,
-                  child: Text("Save Changes"),
-                ),
+child: const Text(
+  "Save Changes",
+  style: TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+  ),
+),                ),
 
                 SizedBox(height: 10),
 
@@ -324,118 +329,6 @@ Future<void> loadUserData() async {
     ),
   );
 }
-// Widget buildRoleCard(String role) {
-//   String currentRole = role.toLowerCase();
-
-//   IconData roleIcon = Icons.security;
-//   Color roleColor = Colors.redAccent;
-
-//   if (currentRole == "police") {
-//     roleIcon = Icons.local_police;
-//     roleColor = Colors.blueAccent;
-//   } else if (currentRole == "ambulance") {
-//     roleIcon = Icons.medical_services;
-//     roleColor = Colors.greenAccent;
-//   } else if (currentRole == "firefighter") {
-//     roleIcon = Icons.local_fire_department;
-//     roleColor = Colors.orangeAccent;
-//   }
-
-//   return Padding(
-//     padding: const EdgeInsets.only(bottom: 18),
-//     child: Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         Text(
-//           "Role",
-//           style: TextStyle(
-//             color: Colors.white70,
-//             fontSize: 13,
-//           ),
-//         ),
-
-//         SizedBox(height: 8),
-
-//         Container(
-//           width: double.infinity,
-//           padding: EdgeInsets.all(16),
-//           decoration: BoxDecoration(
-//             gradient: LinearGradient(
-//               colors: [
-//                 roleColor.withOpacity(0.20),
-//                 Colors.black.withOpacity(0.45),
-//               ],
-//               begin: Alignment.topLeft,
-//               end: Alignment.bottomRight,
-//             ),
-//             borderRadius: BorderRadius.circular(16),
-//             border: Border.all(
-//               color: roleColor.withOpacity(0.5),
-//               width: 1.2,
-//             ),
-//             boxShadow: [
-//               BoxShadow(
-//                 color: roleColor.withOpacity(0.15),
-//                 blurRadius: 10,
-//                 offset: Offset(0, 4),
-//               ),
-//             ],
-//           ),
-//           child: Row(
-//             children: [
-//               Container(
-//                 padding: EdgeInsets.all(12),
-//                 decoration: BoxDecoration(
-//                   color: roleColor.withOpacity(0.15),
-//                   borderRadius: BorderRadius.circular(12),
-//                 ),
-//                 child: Icon(
-//                   roleIcon,
-//                   color: roleColor,
-//                   size: 26,
-//                 ),
-//               ),
-
-//               SizedBox(width: 15),
-
-//               Expanded(
-//                 child: Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     Text(
-//                       role.isEmpty ? "Unknown" : role,
-//                       style: TextStyle(
-//                         color: Colors.white,
-//                         fontSize: 16,
-//                         fontWeight: FontWeight.bold,
-//                       ),
-//                     ),
-
-//                     SizedBox(height: 4),
-
-//                     Text(
-//                       "Authorized Emergency Personnel",
-//                       style: TextStyle(
-//                         color: Colors.white60,
-//                         fontSize: 12,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               ),
-
-//               Icon(
-//                 Icons.verified,
-//                 color: roleColor,
-//                 size: 22,
-//               ),
-//             ],
-//           ),
-//         ),
-//       ],
-//     ),
-//   );
-// }
 
   Widget buildField(
       String title, TextEditingController controller, IconData icon) {

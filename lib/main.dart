@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart'; // 🔥 مهم للتست
 import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'screens/dashboard_page.dart';
 
 import 'screens/login_page.dart';
 
@@ -20,8 +22,22 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: StartPage(),
+      home: AuthCheck(),
     );
+  }
+}
+class AuthCheck extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      return DashboardPage(
+        userId: user.uid,
+      );
+    }
+
+    return StartPage();
   }
 }
 

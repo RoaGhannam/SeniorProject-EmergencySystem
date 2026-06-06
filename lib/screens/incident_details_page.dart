@@ -90,33 +90,39 @@ class IncidentDetailsPage extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                Row(
-                  children: [
-                    Text(
-                      code,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: mainColor,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        status,
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 12),
-                      ),
-                    )
-                  ],
-                ),
+                Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: [
+    Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 4,
+      ),
+      decoration: BoxDecoration(
+        color: mainColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        status,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+        ),
+      ),
+    ),
 
+    const SizedBox(height: 10),
+
+    Text(
+      code,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
+  ],
+),
                 const SizedBox(height: 5),
 
                 Text(
@@ -174,6 +180,12 @@ final videoData =
   duration: videoData["duration"],
   format: videoData["format"],
   timestamp: incidentData["timestamp"],
+  pageColors: [
+    Colors.black,
+    mainColor.withOpacity(0.8),
+    mainColor,
+  ],
+  mainColor: mainColor,
 ),
       ),
     );

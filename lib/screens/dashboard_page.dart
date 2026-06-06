@@ -79,39 +79,45 @@ class _DashboardPageState extends State<DashboardPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "RoadGuard",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "Emergency Services System",
-                        style: TextStyle(
-                          color: Colors.redAccent.withOpacity(0.8),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-
+                  Expanded(
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        "RoadGuard",
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 26,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      Text(
+        "Emergency Services System",
+        overflow: TextOverflow.ellipsis,
+        style: TextStyle(
+          color: Colors.redAccent,
+          fontSize: 13,
+        ),
+      ),
+    ],
+  ),
+),
                   Row(
                     children: [
 
                       /// 🔴 LOGOUT
                       GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => LoginPage()),
-                          );
-                        },
+  onTap: () async {
+    await FirebaseAuth.instance.signOut();
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LoginPage(),
+      ),
+    );
+  },
+  
                         child: Container(
                           padding: EdgeInsets.symmetric(
                               horizontal: 12, vertical: 8),
