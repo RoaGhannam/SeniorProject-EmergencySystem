@@ -10,9 +10,7 @@ import 'screens/login_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   runApp(MyApp());
 }
@@ -20,21 +18,17 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: AuthCheck(),
-    );
+    return MaterialApp(debugShowCheckedModeBanner: false, home: AuthCheck());
   }
 }
+
 class AuthCheck extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
 
     if (user != null) {
-      return DashboardPage(
-        userId: user.uid,
-      );
+      return DashboardPage(userId: user.uid);
     }
 
     return StartPage();
@@ -50,11 +44,7 @@ class StartPage extends StatelessWidget {
         height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF000000),
-              Color(0xFF1a0000),
-              Color(0xFF3b0000),
-            ],
+            colors: [Color(0xFF000000), Color(0xFF1a0000), Color(0xFF3b0000)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -80,10 +70,7 @@ class StartPage extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Image.asset(
-                'assets/logo.png',
-                width: 120,
-              ),
+              child: Image.asset('assets/logo.png', width: 120),
             ),
 
             SizedBox(height: 25),
@@ -116,8 +103,7 @@ class StartPage extends StatelessWidget {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFE53935),
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 60, vertical: 16),
+                  padding: EdgeInsets.symmetric(horizontal: 60, vertical: 16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -126,15 +112,12 @@ class StartPage extends StatelessWidget {
                 ),
 
                 // 🔴 الكود الأصلي (خليه للكومنت)
-                
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => LoginPage()),
+                    MaterialPageRoute(builder: (context) => LoginPage()),
                   );
                 },
-                
 
                 // 🟢 كود التست
                 /*

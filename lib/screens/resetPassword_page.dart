@@ -3,37 +3,28 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ResetPasswordPage extends StatelessWidget {
-
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final roleController = TextEditingController();
   final passwordController = TextEditingController();
 
-Future<void> resetPassword(BuildContext context) async {
-  String email = emailController.text.trim();
+  Future<void> resetPassword(BuildContext context) async {
+    String email = emailController.text.trim();
 
-  try {
-    await FirebaseAuth.instance.sendPasswordResetEmail(
-      email: email,
-    );
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          "Password reset email sent. Check your inbox.",
-        ),
-      ),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Password reset email sent. Check your inbox.")),
+      );
 
-    Navigator.pop(context);
-  } on FirebaseAuthException catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(e.message ?? "Error"),
-      ),
-    );
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message ?? "Error")));
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -44,11 +35,7 @@ Future<void> resetPassword(BuildContext context) async {
 
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF000000),
-              Color(0xFF1a0000),
-              Color(0xFF3b0000),
-            ],
+            colors: [Color(0xFF000000), Color(0xFF1a0000), Color(0xFF3b0000)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -60,7 +47,6 @@ Future<void> resetPassword(BuildContext context) async {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-
                   SizedBox(height: 40),
 
                   // 🔥 Title
@@ -78,10 +64,7 @@ Future<void> resetPassword(BuildContext context) async {
 
                   Text(
                     "Verify your identity to continue",
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontSize: 13,
-                    ),
+                    style: TextStyle(color: Colors.redAccent, fontSize: 13),
                   ),
 
                   SizedBox(height: 40),
@@ -134,7 +117,12 @@ Future<void> resetPassword(BuildContext context) async {
   }
 
   // 🔥 Field محسن
-  Widget buildField(String hint, TextEditingController controller, IconData icon, {bool isPassword = false}) {
+  Widget buildField(
+    String hint,
+    TextEditingController controller,
+    IconData icon, {
+    bool isPassword = false,
+  }) {
     return TextField(
       controller: controller,
       obscureText: isPassword,

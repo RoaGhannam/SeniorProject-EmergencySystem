@@ -3,7 +3,6 @@ import 'package:firebase_database/firebase_database.dart';
 import 'ChangePasswordPage.dart';
 
 class SettingsPage extends StatefulWidget {
-  
   final String userId; // 🔥 نمرر اليوزر الحالي
 
   SettingsPage({required this.userId});
@@ -13,7 +12,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
@@ -21,28 +19,25 @@ class _SettingsPageState extends State<SettingsPage> {
   String role = "";
 
   @override
-void initState() {
-  super.initState();
-  loadUserData();
-}
-
-Future<void> loadUserData() async {
-  final snapshot = await FirebaseDatabase.instance
-      .ref("users")
-      .child(widget.userId)
-      .get();
-
-  if (snapshot.exists) {
-    final data =
-        Map<String, dynamic>.from(snapshot.value as Map);
-
-    setState(() {
-  role = data["Role"]?.toString() ?? "";
-});
+  void initState() {
+    super.initState();
+    loadUserData();
   }
-}
-  
-  
+
+  Future<void> loadUserData() async {
+    final snapshot = await FirebaseDatabase.instance
+        .ref("users")
+        .child(widget.userId)
+        .get();
+
+    if (snapshot.exists) {
+      final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+      setState(() {
+        role = data["Role"]?.toString() ?? "";
+      });
+    }
+  }
 
   bool hasChanges() {
     return nameController.text.isNotEmpty ||
@@ -65,7 +60,7 @@ Future<void> loadUserData() async {
             TextButton(
               child: Text("OK", style: TextStyle(color: Colors.redAccent)),
               onPressed: () => Navigator.pop(context),
-            )
+            ),
           ],
         ),
       );
@@ -86,10 +81,6 @@ Future<void> loadUserData() async {
         updatedData["Email"] = emailController.text;
       }
 
-      
-      
-      
-
       // ✅ التعديل على اليوزر الصحيح
       await db.child("users").child(widget.userId).update(updatedData);
 
@@ -100,8 +91,6 @@ Future<void> loadUserData() async {
         ),
       );
     }
-    
-    
   }
 
   @override
@@ -112,11 +101,7 @@ Future<void> loadUserData() async {
         height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF000000),
-              Color(0xFF140000),
-              Color(0xFF2a0000),
-            ],
+            colors: [Color(0xFF000000), Color(0xFF140000), Color(0xFF2a0000)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -127,7 +112,6 @@ Future<void> loadUserData() async {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 SizedBox(height: 40),
 
                 Row(
@@ -156,10 +140,7 @@ Future<void> loadUserData() async {
 
                 Text(
                   "Manage your account information",
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: Colors.redAccent, fontSize: 13),
                 ),
 
                 SizedBox(height: 30),
@@ -179,38 +160,36 @@ Future<void> loadUserData() async {
                 buildField("Email Address", emailController, Icons.email),
                 buildRoleCard(role),
                 Container(
-  width: double.infinity,
-  margin: EdgeInsets.only(bottom: 20),
-  child: ElevatedButton.icon(
-    icon: Icon(Icons.lock_reset, color: Colors.white),
-    label: Text(
-      "Change Password",
-      style: TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.w600,
-      ),
-    ),
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Color(0xFF1A1A1A),
-      foregroundColor: Colors.white,
-      minimumSize: Size(double.infinity, 55),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      side: BorderSide(
-        color: Colors.redAccent.withOpacity(0.5),
-      ),
-    ),
-    onPressed: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ChangePasswordPage(),
-        ),
-      );
-    },
-  ),
-),
+                  width: double.infinity,
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: ElevatedButton.icon(
+                    icon: Icon(Icons.lock_reset, color: Colors.white),
+                    label: Text(
+                      "Change Password",
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF1A1A1A),
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(double.infinity, 55),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      side: BorderSide(
+                        color: Colors.redAccent.withOpacity(0.5),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ChangePasswordPage()),
+                      );
+                    },
+                  ),
+                ),
 
                 SizedBox(height: 25),
 
@@ -223,13 +202,14 @@ Future<void> loadUserData() async {
                     ),
                   ),
                   onPressed: handleSave,
-child: const Text(
-  "Save Changes",
-  style: TextStyle(
-    color: Colors.white,
-    fontWeight: FontWeight.bold,
-  ),
-),                ),
+                  child: const Text(
+                    "Save Changes",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
 
                 SizedBox(height: 10),
 
@@ -239,8 +219,7 @@ child: const Text(
                     minimumSize: Size(double.infinity, 55),
                   ),
                   onPressed: () => Navigator.pop(context),
-                  child: Text("Cancel",
-                      style: TextStyle(color: Colors.white)),
+                  child: Text("Cancel", style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
@@ -249,99 +228,83 @@ child: const Text(
       ),
     );
   }
+
   Widget buildRoleCard(String role) {
-  String currentRole = role.toString().toLowerCase();
+    String currentRole = role.toString().toLowerCase();
 
-  IconData roleIcon = Icons.security;
-  Color roleColor = Colors.redAccent;
+    IconData roleIcon = Icons.security;
+    Color roleColor = Colors.redAccent;
 
-  if (currentRole == "police") {
-    roleIcon = Icons.local_police;
-    roleColor = Colors.redAccent;
-  } else if (currentRole == "ambulance") {
-    roleIcon = Icons.medical_services;
-    roleColor = Colors.redAccent;
-  } else if (currentRole == "firefighter") {
-    roleIcon = Icons.local_fire_department;
-    roleColor = Colors.redAccent;
-  }
+    if (currentRole == "police") {
+      roleIcon = Icons.local_police;
+      roleColor = Colors.redAccent;
+    } else if (currentRole == "ambulance") {
+      roleIcon = Icons.medical_services;
+      roleColor = Colors.redAccent;
+    } else if (currentRole == "firefighter") {
+      roleIcon = Icons.local_fire_department;
+      roleColor = Colors.redAccent;
+    }
 
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 18),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Role",
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 13,
-          ),
-        ),
-        SizedBox(height: 8),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.45),
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: roleColor.withOpacity(0.6),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: roleColor.withOpacity(0.2),
-                blurRadius: 10,
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: roleColor.withOpacity(0.15),
-                child: Icon(
-                  roleIcon,
-                  color: roleColor,
-                  size: 20,
-                ),
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  role.isEmpty ? "Unknown" : role,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-  Widget buildField(
-      String title, TextEditingController controller, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          Text(
-            title,
-            style: TextStyle(color: Colors.white70, fontSize: 13),
+          Text("Role", style: TextStyle(color: Colors.white70, fontSize: 13)),
+          SizedBox(height: 8),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.45),
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: roleColor.withOpacity(0.6), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: roleColor.withOpacity(0.2),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: roleColor.withOpacity(0.15),
+                  child: Icon(roleIcon, color: roleColor, size: 20),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    role.isEmpty ? "Unknown" : role,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildField(
+    String title,
+    TextEditingController controller,
+    IconData icon,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: TextStyle(color: Colors.white70, fontSize: 13)),
 
           SizedBox(height: 6),
 

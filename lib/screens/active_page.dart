@@ -25,17 +25,18 @@ class ActivePage extends StatelessWidget {
             if (data == null) {
               return const Expanded(
                 child: Center(
-                  child: Text("No incidents",
-                      style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    "No incidents",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               );
             }
 
             /// 🔥 FIX: دعم كابيتال وسمول
             final activeItems = data.entries.where((e) {
-              return (e.value['status'] ?? "")
-                  .toString()
-                  .toLowerCase() == "active";
+              return (e.value['status'] ?? "").toString().toLowerCase() ==
+                  "active";
             }).toList();
 
             return Expanded(
@@ -60,8 +61,11 @@ class ActivePage extends StatelessWidget {
   }
 }
 
-Widget buildPage(BuildContext context,
-    {required String title, required List<Widget> items}) {
+Widget buildPage(
+  BuildContext context, {
+  required String title,
+  required List<Widget> items,
+}) {
   return Scaffold(
     body: Container(
       width: double.infinity,
@@ -105,10 +109,7 @@ Widget buildPage(BuildContext context,
                     ),
                     Text(
                       "Real-time Emergency Monitoring",
-                      style: TextStyle(
-                        color: Colors.redAccent,
-                        fontSize: 11,
-                      ),
+                      style: TextStyle(color: Colors.redAccent, fontSize: 11),
                     ),
                   ],
                 ),
@@ -120,8 +121,11 @@ Widget buildPage(BuildContext context,
             /// 🔴 العنوان
             Row(
               children: const [
-                Icon(Icons.warning_amber_rounded,
-                    color: Colors.redAccent, size: 22),
+                Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.redAccent,
+                  size: 22,
+                ),
                 SizedBox(width: 8),
                 Text(
                   "Active Incidents",
@@ -146,8 +150,13 @@ Widget buildPage(BuildContext context,
 }
 
 /// 🔥 الكارد
-Widget buildItem(BuildContext context, String title, String code,
-    String time, String incidentId) {
+Widget buildItem(
+  BuildContext context,
+  String title,
+  String code,
+  String time,
+  String incidentId,
+) {
   return InkWell(
     borderRadius: BorderRadius.circular(20),
     onTap: () {
@@ -169,10 +178,7 @@ Widget buildItem(BuildContext context, String title, String code,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [
-            Color(0xFF3b0000),
-            Color(0xFFb71c1c),
-          ],
+          colors: [Color(0xFF3b0000), Color(0xFFb71c1c)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -224,7 +230,9 @@ Widget buildItem(BuildContext context, String title, String code,
                     const SizedBox(width: 10),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.redAccent,
                         borderRadius: BorderRadius.circular(6),
@@ -245,10 +253,7 @@ Widget buildItem(BuildContext context, String title, String code,
 
                 Text(
                   code,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13,
-                  ),
+                  style: const TextStyle(color: Colors.white70, fontSize: 13),
                 ),
 
                 const SizedBox(height: 8),
@@ -256,8 +261,11 @@ Widget buildItem(BuildContext context, String title, String code,
                 /// ⏰ الوقت
                 Row(
                   children: [
-                    const Icon(Icons.access_time,
-                        color: Colors.white70, size: 14),
+                    const Icon(
+                      Icons.access_time,
+                      color: Colors.white70,
+                      size: 14,
+                    ),
                     const SizedBox(width: 5),
                     Text(
                       time,

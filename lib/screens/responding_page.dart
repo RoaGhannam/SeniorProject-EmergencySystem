@@ -23,16 +23,16 @@ class RespondingPage extends StatelessWidget {
 
               if (data == null) {
                 return const Center(
-                  child: Text("No incidents",
-                      style: TextStyle(color: Colors.white)),
+                  child: Text(
+                    "No incidents",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 );
               }
 
               /// 🔥 FIX: دعم كابيتال وسمول
               final respondingItems = data.entries.where((e) {
-                return (e.value['status'] ?? "")
-                        .toString()
-                        .toLowerCase() ==
+                return (e.value['status'] ?? "").toString().toLowerCase() ==
                     "responding";
               }).toList();
 
@@ -57,8 +57,11 @@ class RespondingPage extends StatelessWidget {
   }
 }
 
-Widget buildPage(BuildContext context,
-    {required String title, required List<Widget> items}) {
+Widget buildPage(
+  BuildContext context, {
+  required String title,
+  required List<Widget> items,
+}) {
   return Scaffold(
     body: Container(
       width: double.infinity,
@@ -117,8 +120,7 @@ Widget buildPage(BuildContext context,
             /// 🟠 العنوان
             Row(
               children: [
-                Icon(Icons.access_time,
-                    color: Colors.orangeAccent, size: 22),
+                Icon(Icons.access_time, color: Colors.orangeAccent, size: 22),
                 SizedBox(width: 8),
                 Text(
                   title,
@@ -143,8 +145,13 @@ Widget buildPage(BuildContext context,
 }
 
 /// 🔥 الكارد
-Widget buildItem(BuildContext context, String title, String code,
-    String time, String incidentId) {
+Widget buildItem(
+  BuildContext context,
+  String title,
+  String code,
+  String time,
+  String incidentId,
+) {
   return InkWell(
     borderRadius: BorderRadius.circular(20),
     onTap: () {
@@ -166,10 +173,7 @@ Widget buildItem(BuildContext context, String title, String code,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Color(0xFF4a1f00),
-            Color(0xFFff6f00),
-          ],
+          colors: [Color(0xFF4a1f00), Color(0xFFff6f00)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -220,8 +224,7 @@ Widget buildItem(BuildContext context, String title, String code,
                     ),
                     SizedBox(width: 10),
                     Container(
-                      padding: EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: Colors.orangeAccent,
                         borderRadius: BorderRadius.circular(6),
@@ -242,25 +245,18 @@ Widget buildItem(BuildContext context, String title, String code,
 
                 Text(
                   code,
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: Colors.white70, fontSize: 13),
                 ),
 
                 SizedBox(height: 8),
 
                 Row(
                   children: [
-                    Icon(Icons.access_time,
-                        color: Colors.white70, size: 14),
+                    Icon(Icons.access_time, color: Colors.white70, size: 14),
                     SizedBox(width: 5),
                     Text(
                       time,
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                   ],
                 ),

@@ -18,7 +18,6 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-
   bool firstLoad = true;
 
   @override
@@ -27,28 +26,19 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     openTime = DateTime.now();
 
-    FirebaseDatabase.instance
-    .ref("incidents")
-    .onChildAdded
-    .listen((event) {
+    FirebaseDatabase.instance.ref("incidents").onChildAdded.listen((event) {
+      final data = event.snapshot.value as Map?;
 
-  final data = event.snapshot.value as Map?;
+      if (data == null) return;
 
-  if (data == null) return;
+      String timestamp = data["timestamp"] ?? "";
 
-  String timestamp = data["timestamp"] ?? "";
+      DateTime incidentTime = DateTime.parse(timestamp);
 
-  DateTime incidentTime = DateTime.parse(timestamp);
-
-  if (incidentTime.isAfter(openTime)) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AlertPage(),
-      ),
-    );
-  }
-});
+      if (incidentTime.isAfter(openTime)) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => AlertPage()));
+      }
+    });
   }
 
   @override
@@ -74,63 +64,65 @@ class _DashboardPageState extends State<DashboardPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               /// 🔥 HEADER
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        "RoadGuard",
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 26,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      Text(
-        "Emergency Services System",
-        overflow: TextOverflow.ellipsis,
-        style: TextStyle(
-          color: Colors.redAccent,
-          fontSize: 13,
-        ),
-      ),
-    ],
-  ),
-),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "RoadGuard",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "Emergency Services System",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   Row(
                     children: [
-
                       /// 🔴 LOGOUT
                       GestureDetector(
-  onTap: () async {
-    await FirebaseAuth.instance.signOut();
+                        onTap: () async {
+                          await FirebaseAuth.instance.signOut();
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => LoginPage(),
-      ),
-    );
-  },
-  
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (_) => LoginPage()),
+                          );
+                        },
+
                         child: Container(
                           padding: EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                                color: Colors.redAccent.withOpacity(0.4)),
+                              color: Colors.redAccent.withOpacity(0.4),
+                            ),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.logout,
-                                  color: Colors.redAccent, size: 20),
+                              Icon(
+                                Icons.logout,
+                                color: Colors.redAccent,
+                                size: 20,
+                              ),
                               SizedBox(width: 6),
                               Text(
                                 "Logout",
@@ -153,14 +145,18 @@ class _DashboardPageState extends State<DashboardPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
-                          icon: Icon(Icons.settings,
-                              color: Colors.white, size: 26),
+                          icon: Icon(
+                            Icons.settings,
+                            color: Colors.white,
+                            size: 26,
+                          ),
                           onPressed: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) =>
-SettingsPage(userId: widget.userId)                              ),
+                                    SettingsPage(userId: widget.userId),
+                              ),
                             );
                           },
                         ),
@@ -174,10 +170,7 @@ SettingsPage(userId: widget.userId)                              ),
 
               Text(
                 "Incident Dashboard",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                ),
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ),
 
               SizedBox(height: 25),
@@ -185,47 +178,57 @@ SettingsPage(userId: widget.userId)                              ),
               /// 🔥 Firebase Counts
               Expanded(
                 child: StreamBuilder(
-                  stream:
-                      FirebaseDatabase.instance.ref("incidents").onValue,
+                  stream: FirebaseDatabase.instance.ref("incidents").onValue,
                   builder: (context, snapshot) {
                     if (!snapshot.hasData) {
-                      return Center(
-                          child: CircularProgressIndicator());
+                      return Center(child: CircularProgressIndicator());
                     }
 
-                    final data = snapshot.data!.snapshot.value
-                        as Map<dynamic, dynamic>?;
+                    final data =
+                        snapshot.data!.snapshot.value as Map<dynamic, dynamic>?;
 
                     if (data == null) {
                       return Center(
-                        child: Text("No data",
-                            style:
-                                TextStyle(color: Colors.white)),
+                        child: Text(
+                          "No data",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       );
                     }
 
                     /// 🔥 counts (case insensitive)
-                    int activeCount = data.entries.where((e) =>
-                        (e.value['status'] ?? "")
-                            .toString()
-                            .toLowerCase() ==
-                        "active").length;
+                    int activeCount = data.entries
+                        .where(
+                          (e) =>
+                              (e.value['status'] ?? "")
+                                  .toString()
+                                  .toLowerCase() ==
+                              "active",
+                        )
+                        .length;
 
-                    int respondingCount = data.entries.where((e) =>
-                        (e.value['status'] ?? "")
-                            .toString()
-                            .toLowerCase() ==
-                        "responding").length;
+                    int respondingCount = data.entries
+                        .where(
+                          (e) =>
+                              (e.value['status'] ?? "")
+                                  .toString()
+                                  .toLowerCase() ==
+                              "responding",
+                        )
+                        .length;
 
-                    int handledCount = data.entries.where((e) =>
-                        (e.value['status'] ?? "")
-                            .toString()
-                            .toLowerCase() ==
-                        "handled").length;
+                    int handledCount = data.entries
+                        .where(
+                          (e) =>
+                              (e.value['status'] ?? "")
+                                  .toString()
+                                  .toLowerCase() ==
+                              "handled",
+                        )
+                        .length;
 
                     return Column(
                       children: [
-
                         buildCard(
                           context: context,
                           color1: Color(0xFF5a0000),
@@ -237,8 +240,7 @@ SettingsPage(userId: widget.userId)                              ),
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (_) => ActivePage()),
+                              MaterialPageRoute(builder: (_) => ActivePage()),
                             );
                           },
                         ),
@@ -257,8 +259,8 @@ SettingsPage(userId: widget.userId)                              ),
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (_) =>
-                                      RespondingPage()),
+                                builder: (_) => RespondingPage(),
+                              ),
                             );
                           },
                         ),
@@ -276,9 +278,7 @@ SettingsPage(userId: widget.userId)                              ),
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (_) =>
-                                      HandledPage()),
+                              MaterialPageRoute(builder: (_) => HandledPage()),
                             );
                           },
                         ),
@@ -350,10 +350,7 @@ SettingsPage(userId: widget.userId)                              ),
                 SizedBox(height: 3),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 12,
-                  ),
+                  style: TextStyle(color: Colors.white70, fontSize: 12),
                 ),
               ],
             ),

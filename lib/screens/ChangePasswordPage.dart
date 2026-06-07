@@ -7,7 +7,6 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
-
   final currentPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -17,62 +16,55 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   bool hideConfirm = true;
 
   Future<void> updatePassword() async {
-  try {
-    if (newPasswordController.text !=
-        confirmPasswordController.text) {
+    try {
+      if (newPasswordController.text != confirmPasswordController.text) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Passwords do not match"),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("No user logged in"),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPasswordController.text,
+      );
+
+      await user.reauthenticateWithCredential(credential);
+
+      await user.updatePassword(newPasswordController.text);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Passwords do not match"),
+          content: Text("Password updated successfully"),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? "Error"),
           backgroundColor: Colors.red,
         ),
       );
-      return;
     }
-
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("No user logged in"),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    AuthCredential credential =
-        EmailAuthProvider.credential(
-      email: user.email!,
-      password: currentPasswordController.text,
-    );
-
-    await user.reauthenticateWithCredential(
-      credential,
-    );
-
-    await user.updatePassword(
-      newPasswordController.text,
-    );
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Password updated successfully"),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    Navigator.pop(context);
-
-  } on FirebaseAuthException catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(e.message ?? "Error"),
-        backgroundColor: Colors.red,
-      ),
-    );
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -83,11 +75,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF000000),
-              Color(0xFF140000),
-              Color(0xFF2a0000),
-            ],
+            colors: [Color(0xFF000000), Color(0xFF140000), Color(0xFF2a0000)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -99,21 +87,16 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.arrow_back,
-                          color: Colors.white),
+                      icon: Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () => Navigator.pop(context),
                     ),
 
                     Text(
                       "RoadGuard",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 20),
                     ),
                   ],
                 ),
@@ -133,10 +116,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
                 Text(
                   "Update your account password securely",
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: Colors.redAccent, fontSize: 13),
                 ),
 
                 SizedBox(height: 35),
@@ -144,8 +124,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 Center(
                   child: CircleAvatar(
                     radius: 45,
-                    backgroundColor:
-                        Colors.redAccent.withOpacity(0.15),
+                    backgroundColor: Colors.redAccent.withOpacity(0.15),
                     child: Icon(
                       Icons.lock_reset,
                       color: Colors.redAccent,
@@ -194,42 +173,30 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFE53935),
-                    minimumSize:
-                        Size(double.infinity, 55),
+                    minimumSize: Size(double.infinity, 55),
                     shape: RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: updatePassword,
-                  
+
                   child: Text(
                     "Update Password",
-style: TextStyle(
-    fontSize: 16,
-    color: Colors.white,
-  ),                  ),
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
                 ),
 
                 SizedBox(height: 12),
 
                 OutlinedButton(
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: Colors.white24,
-                    ),
-                    minimumSize:
-                        Size(double.infinity, 55),
+                    side: BorderSide(color: Colors.white24),
+                    minimumSize: Size(double.infinity, 55),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text(
-                    "Cancel",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: Text("Cancel", style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
@@ -250,67 +217,46 @@ style: TextStyle(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
-          Text(
-            title,
-            style: TextStyle(
-              color: Colors.white70,
-              fontSize: 13,
-            ),
-          ),
+          Text(title, style: TextStyle(color: Colors.white70, fontSize: 13)),
 
           SizedBox(height: 6),
 
           TextField(
-  controller: controller,
-  obscureText: obscure,
-  style: TextStyle(
-    color: Colors.white,
-  ),
-  decoration: InputDecoration(
-    hintText: title,
-    hintStyle: TextStyle(
-      color: Colors.white38,
-    ),
+            controller: controller,
+            obscureText: obscure,
+            style: TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: title,
+              hintStyle: TextStyle(color: Colors.white38),
 
-    prefixIcon: Icon(
-      Icons.lock,
-      color: Colors.white70,
-    ),
+              prefixIcon: Icon(Icons.lock, color: Colors.white70),
 
-    suffixIcon: IconButton(
-      icon: Icon(
-        obscure
-            ? Icons.visibility_off
-            : Icons.visibility,
-        color: Colors.white54,
-      ),
-      onPressed: onTap,
-    ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  obscure ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.white54,
+                ),
+                onPressed: onTap,
+              ),
 
-    filled: true,
-    fillColor: Colors.black.withOpacity(0.45),
+              filled: true,
+              fillColor: Colors.black.withOpacity(0.45),
 
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
 
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(
-        color: Colors.white24,
-      ),
-    ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.white24),
+              ),
 
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(
-        color: Colors.redAccent,
-        width: 1.5,
-      ),
-    ),
-  ),
-),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: Colors.redAccent, width: 1.5),
+              ),
+            ),
+          ),
         ],
       ),
     );

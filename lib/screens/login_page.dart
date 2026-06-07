@@ -18,74 +18,61 @@ class _LoginPageState extends State<LoginPage> {
 
   bool hidePassword = true;
 
-Future<void> handleLogin(BuildContext context) async {
-  String email = usernameController.text.trim();
-  String password = passwordController.text.trim();
+  Future<void> handleLogin(BuildContext context) async {
+    String email = usernameController.text.trim();
+    String password = passwordController.text.trim();
 
-  if (email.isEmpty || password.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Please enter email and password"),
-      ),
-    );
-    return;
-  }
-
-  try {
-    // تسجيل دخول من Firebase Authentication
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-
-    // جلب userId من Realtime Database
-    final snapshot =
-        await FirebaseDatabase.instance.ref("users").get();
-
-    String currentUserId = "";
-
-    if (snapshot.exists) {
-      final data =
-          Map<String, dynamic>.from(snapshot.value as Map);
-
-      data.forEach((key, value) {
-        final user = Map<String, dynamic>.from(value);
-
-        if (user["Email"] == email) {
-          currentUserId = key;
-        }
-      });
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter email and password")),
+      );
+      return;
     }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => DashboardPage(
-          userId: currentUserId,
-        ),
-      ),
-    );
-  } on FirebaseAuthException {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Wrong email or password"),
-      ),
-    );
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Error: $e"),
-      ),
-    );
+    try {
+      // تسجيل دخول من Firebase Authentication
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // جلب userId من Realtime Database
+      final snapshot = await FirebaseDatabase.instance.ref("users").get();
+
+      String currentUserId = "";
+
+      if (snapshot.exists) {
+        final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+        data.forEach((key, value) {
+          final user = Map<String, dynamic>.from(value);
+
+          if (user["Email"] == email) {
+            currentUserId = key;
+          }
+        });
+      }
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => DashboardPage(userId: currentUserId)),
+      );
+    } on FirebaseAuthException {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Wrong email or password")));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-
           Container(
             width: double.infinity,
             height: double.infinity,
@@ -121,11 +108,7 @@ Future<void> handleLogin(BuildContext context) async {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
-                Image.asset(
-                  'assets/logo.png',
-                  width: 100,
-                ),
+                Image.asset('assets/logo.png', width: 100),
 
                 SizedBox(height: 20),
 
@@ -142,10 +125,7 @@ Future<void> handleLogin(BuildContext context) async {
 
                 Text(
                   "Emergency Services Access",
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 13,
-                  ),
+                  style: TextStyle(color: Colors.redAccent, fontSize: 13),
                 ),
 
                 SizedBox(height: 40),
@@ -171,47 +151,44 @@ Future<void> handleLogin(BuildContext context) async {
                 SizedBox(height: 20),
 
                 TextField(
-  controller: passwordController,
-  focusNode: passwordFocus,
-  obscureText: hidePassword,
-  style: TextStyle(color: Colors.white),
-  textInputAction: TextInputAction.done,
-  onSubmitted: (_) {
-    handleLogin(context);
-  },
-  decoration: InputDecoration(
-    hintText: "Enter your password",
-    hintStyle: TextStyle(color: Colors.grey),
+                  controller: passwordController,
+                  focusNode: passwordFocus,
+                  obscureText: hidePassword,
+                  style: TextStyle(color: Colors.white),
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) {
+                    handleLogin(context);
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Enter your password",
+                    hintStyle: TextStyle(color: Colors.grey),
 
-    suffixIcon: IconButton(
-  icon: Icon(
-    hidePassword
-        ? Icons.visibility_off
-        : Icons.visibility,
-    color: Colors.white70,
-  ),
-  onPressed: () {
-    setState(() {
-      hidePassword = !hidePassword;
-    });
-  },
-),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        hidePassword ? Icons.visibility_off : Icons.visibility,
+                        color: Colors.white70,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          hidePassword = !hidePassword;
+                        });
+                      },
+                    ),
 
-    filled: true,
-    fillColor: Colors.black.withOpacity(0.4),
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(15),
-    ),
-  ),
-),
+                    filled: true,
+                    fillColor: Colors.black.withOpacity(0.4),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
+                ),
 
                 SizedBox(height: 30),
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFE53935),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                    padding: EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -221,10 +198,7 @@ Future<void> handleLogin(BuildContext context) async {
                   },
                   child: Text(
                     "LOGIN",
-                    style: TextStyle(
-                      color: Colors.white,
-                      letterSpacing: 1.5,
-                    ),
+                    style: TextStyle(color: Colors.white, letterSpacing: 1.5),
                   ),
                 ),
 

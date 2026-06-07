@@ -8,7 +8,6 @@ class AlertPage extends StatefulWidget {
 }
 
 class _AlertPageState extends State<AlertPage> {
-
   final AudioPlayer player = AudioPlayer();
 
   @override
@@ -34,11 +33,7 @@ class _AlertPageState extends State<AlertPage> {
 
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF000000),
-              Color(0xFF140000),
-              Color(0xFF2a0000),
-            ],
+            colors: [Color(0xFF000000), Color(0xFF140000), Color(0xFF2a0000)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -47,7 +42,6 @@ class _AlertPageState extends State<AlertPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             Text(
               "RoadGuard",
               style: TextStyle(
@@ -59,10 +53,7 @@ class _AlertPageState extends State<AlertPage> {
 
             Text(
               "Emergency Services System",
-              style: TextStyle(
-                color: Colors.redAccent,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.redAccent, fontSize: 12),
             ),
 
             SizedBox(height: 60),
@@ -95,10 +86,7 @@ class _AlertPageState extends State<AlertPage> {
 
             Text(
               "Ringing...",
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.white70, fontSize: 14),
             ),
 
             SizedBox(height: 50),
@@ -119,10 +107,7 @@ class _AlertPageState extends State<AlertPage> {
                   MaterialPageRoute(builder: (_) => ActivePage()),
                 );
               },
-              child: Text(
-                "Received",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: Text("Received", style: TextStyle(color: Colors.white)),
             ),
           ],
         ),
