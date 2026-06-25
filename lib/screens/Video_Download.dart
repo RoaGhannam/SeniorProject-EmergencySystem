@@ -27,8 +27,6 @@ class VideoDownloadPage extends StatefulWidget {
 class _VideoDownloadPageState extends State<VideoDownloadPage> {
   late VideoPlayerController controller;
   @override
-  @override
-  @override
   void initState() {
     super.initState();
 
@@ -127,6 +125,93 @@ class _VideoDownloadPageState extends State<VideoDownloadPage> {
                               height: 220,
                               width: double.infinity,
                               child: VideoPlayer(controller),
+                            ),
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: IconButton(
+                                icon: const Icon(
+                                  Icons.fullscreen,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => Dialog(
+                                      backgroundColor: Colors.black,
+                                      insetPadding: const EdgeInsets.all(10),
+                                      child: Stack(
+                                        children: [
+                                          Center(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                if (controller
+                                                    .value
+                                                    .isPlaying) {
+                                                  controller.pause();
+                                                } else {
+                                                  controller.play();
+                                                }
+                                                setState(() {});
+                                              },
+                                              child: AspectRatio(
+                                                aspectRatio: controller
+                                                    .value
+                                                    .aspectRatio,
+                                                child: AnimatedBuilder(
+                                                  animation: controller,
+                                                  builder: (context, child) {
+                                                    return Stack(
+                                                      alignment:
+                                                          Alignment.center,
+                                                      children: [
+                                                        VideoPlayer(controller),
+
+                                                        if (!controller
+                                                                .value
+                                                                .isPlaying ||
+                                                            controller
+                                                                    .value
+                                                                    .position >=
+                                                                controller
+                                                                    .value
+                                                                    .duration)
+                                                          const Icon(
+                                                            Icons
+                                                                .play_circle_fill,
+                                                            color: Colors
+                                                                .redAccent,
+                                                            size: 80,
+                                                          ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+                                          Positioned(
+                                            top: 10,
+                                            right: 10,
+                                            child: IconButton(
+                                              icon: const Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                                size: 30,
+                                              ),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
 
                             if (!controller.value.isPlaying)

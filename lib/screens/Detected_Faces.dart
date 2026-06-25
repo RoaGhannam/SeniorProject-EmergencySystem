@@ -124,19 +124,60 @@ class DetectedFacesPage extends StatelessWidget {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16),
-                            child: Image.network(
-                              face['image'],
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                print("ERROR = $error");
+                            child: GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => Scaffold(
+                                    backgroundColor: Colors.black,
+                                    body: Stack(
+                                      children: [
+                                        SizedBox.expand(
+                                          child: InteractiveViewer(
+                                            minScale: 1,
+                                            maxScale: 5,
+                                            child: Image.network(
+                                              face['image'],
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                              fit: BoxFit.contain,
+                                            ),
+                                          ),
+                                        ),
 
-                                return const Center(
-                                  child: Text(
-                                    "Image Error",
-                                    style: TextStyle(color: Colors.white),
+                                        Positioned(
+                                          top: 10,
+                                          right: 10,
+                                          child: IconButton(
+                                            icon: const Icon(
+                                              Icons.close,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
+                              child: Image.network(
+                                face['image'],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  print("ERROR = $error");
+
+                                  return const Center(
+                                    child: Text(
+                                      "Image Error",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
                         );

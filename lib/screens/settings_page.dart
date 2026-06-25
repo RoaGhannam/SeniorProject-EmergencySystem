@@ -16,6 +16,10 @@ class _SettingsPageState extends State<SettingsPage> {
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
 
+  String userName = "";
+  String userPhone = "";
+  String userEmail = "";
+
   String role = "";
 
   @override
@@ -30,11 +34,19 @@ class _SettingsPageState extends State<SettingsPage> {
         .child(widget.userId)
         .get();
 
+    print("USER ID = ${widget.userId}");
+    print("EXISTS = ${snapshot.exists}");
+    print("VALUE = ${snapshot.value}");
+
     if (snapshot.exists) {
       final data = Map<String, dynamic>.from(snapshot.value as Map);
 
       setState(() {
         role = data["Role"]?.toString() ?? "";
+
+        userName = data["Name"]?.toString() ?? "";
+        userPhone = data["Phone"]?.toString() ?? "";
+        userEmail = data["Email"]?.toString() ?? "";
       });
     }
   }
@@ -155,9 +167,41 @@ class _SettingsPageState extends State<SettingsPage> {
 
                 SizedBox(height: 30),
 
-                buildField("Full Name", nameController, Icons.person),
-                buildField("Phone Number", phoneController, Icons.phone),
-                buildField("Email Address", emailController, Icons.email),
+                buildField(
+                  "Full Name",
+                  nameController,
+                  Icons.person,
+                  hint: userName,
+                ),
+
+                buildField(
+                  "Phone Number",
+                  phoneController,
+                  Icons.phone,
+                  hint: userPhone,
+                ),
+
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(16),
+                  margin: EdgeInsets.only(bottom: 18),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.email, color: Colors.white70),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          userEmail,
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 buildRoleCard(role),
                 Container(
                   width: double.infinity,
@@ -297,8 +341,10 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget buildField(
     String title,
     TextEditingController controller,
-    IconData icon,
-  ) {
+    IconData icon, {
+    bool readOnly = false,
+    String hint = "",
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
       child: Column(
@@ -310,10 +356,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
           TextField(
             controller: controller,
+            readOnly: readOnly,
             obscureText: title == "Password",
             style: TextStyle(color: Colors.white),
             decoration: InputDecoration(
-              hintText: title,
+              hintText: hint.isEmpty ? title : hint,
               hintStyle: TextStyle(color: Colors.white38),
               prefixIcon: Icon(icon, color: Colors.white70),
               filled: true,
