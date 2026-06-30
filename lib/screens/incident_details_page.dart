@@ -4,6 +4,8 @@ import 'dashboard_page.dart';
 import 'map_page.dart';
 import 'Detected_Faces.dart';
 import 'Video_Download.dart';
+import 'responding_page.dart';
+import 'handled_page.dart';
 
 class IncidentDetailsPage extends StatelessWidget {
   final String title;
@@ -23,9 +25,15 @@ class IncidentDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isActive = status == "Active";
-    bool isResponding = status == "Responding";
-    bool isHandled = status == "Handled";
+    final currentStatus = status.trim().toLowerCase();
+
+    bool isActive = currentStatus == "active";
+    bool isResponding = currentStatus == "responding";
+    bool isHandled = currentStatus == "handled";
+
+    print("isActive = $isActive");
+    print("isResponding = $isResponding");
+    print("isHandled = $isHandled");
 
     Color mainColor = isActive
         ? const Color(0xFFD32F2F)
@@ -277,13 +285,11 @@ class IncidentDetailsPage extends StatelessWidget {
                           );
 
                           if (isActive) {
-                            // 🔥 Active → Responding
                             await ref.update({"status": "Responding"});
-                            Navigator.pop(context);
+                            Navigator.pop(context, "responding");
                           } else if (isResponding) {
-                            // 🔥 Responding → Handled
                             await ref.update({"status": "Handled"});
-                            Navigator.pop(context);
+                            Navigator.pop(context, "handled");
                           } else if (isHandled) {
                             Navigator.pushAndRemoveUntil(
                               context,

@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'active_page.dart';
+import 'incident_details_page.dart';
 
 class AlertPage extends StatefulWidget {
+  final String incidentId;
+  final String title;
+  final String code;
+  final String time;
+  final String status;
+
+  const AlertPage({
+    super.key,
+    required this.incidentId,
+    required this.title,
+    required this.code,
+    required this.time,
+    required this.status,
+  });
+
   @override
-  _AlertPageState createState() => _AlertPageState();
+  State<AlertPage> createState() => _AlertPageState();
 }
 
 class _AlertPageState extends State<AlertPage> {
@@ -104,7 +120,15 @@ class _AlertPageState extends State<AlertPage> {
 
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => ActivePage()),
+                  MaterialPageRoute(
+                    builder: (_) => IncidentDetailsPage(
+                      title: widget.title,
+                      code: widget.code,
+                      time: widget.time,
+                      status: widget.status,
+                      incidentId: widget.incidentId,
+                    ),
+                  ),
                 );
               },
               child: Text("Received", style: TextStyle(color: Colors.white)),

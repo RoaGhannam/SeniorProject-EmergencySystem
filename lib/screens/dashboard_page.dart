@@ -36,7 +36,19 @@ class _DashboardPageState extends State<DashboardPage> {
       DateTime incidentTime = DateTime.parse(timestamp);
 
       if (incidentTime.isAfter(openTime)) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => AlertPage()));
+        print("STATUS = ${data["status"]}");
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AlertPage(
+              incidentId: event.snapshot.key!,
+              title: data["type"] ?? "",
+              code: event.snapshot.key!,
+              time: data["timestamp"] ?? "",
+              status: data["status"] ?? "Active",
+            ),
+          ),
+        );
       }
     });
   }

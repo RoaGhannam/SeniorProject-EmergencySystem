@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'incident_details_page.dart';
+import 'handled_page.dart';
 
 class RespondingPage extends StatelessWidget {
+  final String? incidentIdToOpen;
+
+  const RespondingPage({super.key, this.incidentIdToOpen});
+
   @override
   Widget build(BuildContext context) {
     return buildPage(
@@ -35,6 +40,30 @@ class RespondingPage extends StatelessWidget {
                 return (e.value['status'] ?? "").toString().toLowerCase() ==
                     "responding";
               }).toList();
+              if (incidentIdToOpen != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  final index = respondingItems.indexWhere(
+                    (e) => e.key == incidentIdToOpen,
+                  );
+
+                  if (index != -1) {
+                    final incident = respondingItems[index].value;
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => IncidentDetailsPage(
+                          title: incident["type"] ?? "Unknown",
+                          code: respondingItems[index].key,
+                          time: incident["timestamp"] ?? "",
+                          status: "Responding",
+                          incidentId: respondingItems[index].key,
+                        ),
+                      ),
+                    );
+                  }
+                });
+              }
 
               return ListView(
                 children: respondingItems.map((e) {
@@ -154,8 +183,8 @@ Widget buildItem(
 ) {
   return InkWell(
     borderRadius: BorderRadius.circular(20),
-    onTap: () {
-      Navigator.push(
+    onTap: () async {
+      final result = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => IncidentDetailsPage(
@@ -167,6 +196,15 @@ Widget buildItem(
           ),
         ),
       );
+
+      if (result == "handled") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => HandledPage(incidentIdToOpen: incidentId),
+          ),
+        );
+      }
     },
     child: Container(
       margin: EdgeInsets.only(bottom: 18),

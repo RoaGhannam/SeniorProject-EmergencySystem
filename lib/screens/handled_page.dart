@@ -3,6 +3,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'incident_details_page.dart';
 
 class HandledPage extends StatelessWidget {
+  final String? incidentIdToOpen;
+
+  const HandledPage({super.key, this.incidentIdToOpen});
+
   @override
   Widget build(BuildContext context) {
     return buildPage(
@@ -34,6 +38,30 @@ class HandledPage extends StatelessWidget {
                 return (e.value['status'] ?? "").toString().toLowerCase() ==
                     "handled";
               }).toList();
+              if (incidentIdToOpen != null) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  final index = handledItems.indexWhere(
+                    (e) => e.key == incidentIdToOpen,
+                  );
+
+                  if (index != -1) {
+                    final incident = handledItems[index].value;
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => IncidentDetailsPage(
+                          title: incident["type"] ?? "Unknown",
+                          code: handledItems[index].key,
+                          time: incident["timestamp"] ?? "",
+                          status: "Handled",
+                          incidentId: handledItems[index].key,
+                        ),
+                      ),
+                    );
+                  }
+                });
+              }
 
               return ListView(
                 children: handledItems.map((e) {

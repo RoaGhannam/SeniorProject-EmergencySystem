@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'incident_details_page.dart';
+import 'responding_page.dart';
 
 class ActivePage extends StatelessWidget {
   @override
@@ -159,8 +160,8 @@ Widget buildItem(
 ) {
   return InkWell(
     borderRadius: BorderRadius.circular(20),
-    onTap: () {
-      Navigator.push(
+    onTap: () async {
+      final result = await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => IncidentDetailsPage(
@@ -172,6 +173,15 @@ Widget buildItem(
           ),
         ),
       );
+
+      if (result == "responding") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => RespondingPage(incidentIdToOpen: incidentId),
+          ),
+        );
+      }
     },
     child: Container(
       margin: const EdgeInsets.only(bottom: 18),
