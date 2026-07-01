@@ -4,9 +4,14 @@ import 'incident_details_page.dart';
 import 'handled_page.dart';
 
 class RespondingPage extends StatelessWidget {
+  final String userId;
   final String? incidentIdToOpen;
 
-  const RespondingPage({super.key, this.incidentIdToOpen});
+  const RespondingPage({
+    super.key,
+    required this.userId,
+    this.incidentIdToOpen,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -40,30 +45,35 @@ class RespondingPage extends StatelessWidget {
                 return (e.value['status'] ?? "").toString().toLowerCase() ==
                     "responding";
               }).toList();
+              
               if (incidentIdToOpen != null) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  final index = respondingItems.indexWhere(
-                    (e) => e.key == incidentIdToOpen,
-                  );
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    final index = respondingItems.indexWhere(
+      (e) => e.key == incidentIdToOpen,
+    );
 
-                  if (index != -1) {
-                    final incident = respondingItems[index].value;
+    if (index != -1) {
+      final incident = respondingItems[index].value;
 
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => IncidentDetailsPage(
-                          title: incident["type"] ?? "Unknown",
-                          code: respondingItems[index].key,
-                          time: incident["timestamp"] ?? "",
-                          status: "Responding",
-                          incidentId: respondingItems[index].key,
-                        ),
-                      ),
-                    );
-                  }
-                });
-              }
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => IncidentDetailsPage(
+            title: incident["type"] ?? "Unknown",
+            code: respondingItems[index].key,
+            time: incident["timestamp"] ?? "",
+            status: "Responding",
+incidentId: respondingItems[index].key,
+userId: userId,          ),
+        ),
+      );
+
+      if (result != null) {
+        Navigator.pop(context, result);
+      }
+    }
+  });
+}
 
               return ListView(
                 children: respondingItems.map((e) {
@@ -75,6 +85,7 @@ class RespondingPage extends StatelessWidget {
                     e.key,
                     incident['timestamp'] ?? "",
                     e.key,
+                     userId,
                   );
                 }).toList(),
               );
@@ -180,32 +191,38 @@ Widget buildItem(
   String code,
   String time,
   String incidentId,
+    String userId,
+
 ) {
   return InkWell(
     borderRadius: BorderRadius.circular(20),
     onTap: () async {
-      final result = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => IncidentDetailsPage(
-            title: title,
-            code: code,
-            time: time,
-            status: "Responding",
-            incidentId: incidentId,
-          ),
-        ),
-      );
+  final result = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => IncidentDetailsPage(
+        title: title,
+        code: code,
+        time: time,
+        status: "Responding",
+        incidentId: incidentId,
+        userId: userId,
+      ),
+    ),
+  );
 
-      if (result == "handled") {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => HandledPage(incidentIdToOpen: incidentId),
-          ),
-        );
-      }
-    },
+  if (result != null) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => HandledPage(
+        incidentIdToOpen: result,
+        userId: userId,
+      ),
+    ),
+  );
+}
+},
     child: Container(
       margin: EdgeInsets.only(bottom: 18),
       padding: EdgeInsets.all(16),

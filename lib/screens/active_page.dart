@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'incident_details_page.dart';
 import 'responding_page.dart';
+import 'handled_page.dart';
 
 class ActivePage extends StatelessWidget {
+  final String userId;
+
+  const ActivePage({
+    super.key,
+    required this.userId,
+  });
   @override
   Widget build(BuildContext context) {
+    final userId = this.userId;
     return buildPage(
       context,
       title: "Active Incidents",
@@ -46,12 +54,13 @@ class ActivePage extends StatelessWidget {
                   final incident = e.value;
 
                   return buildItem(
-                    context,
-                    incident['type'] ?? "Unknown",
-                    e.key,
-                    incident['timestamp'] ?? "",
-                    e.key,
-                  );
+  context,
+  incident['type'] ?? "Unknown",
+  e.key,
+  incident['timestamp'] ?? "",
+  e.key,
+  userId,
+);
                 }).toList(),
               ),
             );
@@ -157,7 +166,8 @@ Widget buildItem(
   String code,
   String time,
   String incidentId,
-) {
+  String userId,
+){
   return InkWell(
     borderRadius: BorderRadius.circular(20),
     onTap: () async {
@@ -170,18 +180,22 @@ Widget buildItem(
             time: time,
             status: "Active",
             incidentId: incidentId,
+            userId: userId,
           ),
         ),
       );
 
       if (result == "responding") {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => RespondingPage(incidentIdToOpen: incidentId),
-          ),
-        );
-      }
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => RespondingPage(
+        incidentIdToOpen: incidentId,
+        userId: userId,
+      ),
+    ),
+  );
+}
     },
     child: Container(
       margin: const EdgeInsets.only(bottom: 18),

@@ -9,6 +9,7 @@ class AlertPage extends StatefulWidget {
   final String code;
   final String time;
   final String status;
+  final String userId;
 
   const AlertPage({
     super.key,
@@ -17,6 +18,7 @@ class AlertPage extends StatefulWidget {
     required this.code,
     required this.time,
     required this.status,
+    required this.userId,
   });
 
   @override
@@ -127,6 +129,7 @@ class _AlertPageState extends State<AlertPage> {
                       time: widget.time,
                       status: widget.status,
                       incidentId: widget.incidentId,
+                      userId: widget.userId,
                     ),
                   ),
                 );

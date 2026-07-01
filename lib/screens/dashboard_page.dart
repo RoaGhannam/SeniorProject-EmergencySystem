@@ -46,6 +46,7 @@ class _DashboardPageState extends State<DashboardPage> {
               code: event.snapshot.key!,
               time: data["timestamp"] ?? "",
               status: data["status"] ?? "Active",
+              userId: widget.userId,
             ),
           ),
         );
@@ -252,7 +253,10 @@ class _DashboardPageState extends State<DashboardPage> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => ActivePage()),
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    ActivePage(userId: widget.userId),
+                              ),
                             );
                           },
                         ),
@@ -271,7 +275,8 @@ class _DashboardPageState extends State<DashboardPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => RespondingPage(),
+                                builder: (_) =>
+                                    RespondingPage(userId: widget.userId),
                               ),
                             );
                           },
@@ -290,7 +295,10 @@ class _DashboardPageState extends State<DashboardPage> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => HandledPage()),
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    HandledPage(userId: widget.userId),
+                              ),
                             );
                           },
                         ),

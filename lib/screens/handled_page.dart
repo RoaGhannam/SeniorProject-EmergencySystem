@@ -4,8 +4,9 @@ import 'incident_details_page.dart';
 
 class HandledPage extends StatelessWidget {
   final String? incidentIdToOpen;
+  final String userId;
 
-  const HandledPage({super.key, this.incidentIdToOpen});
+  const HandledPage({super.key, this.incidentIdToOpen, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -38,28 +39,26 @@ class HandledPage extends StatelessWidget {
                 return (e.value['status'] ?? "").toString().toLowerCase() ==
                     "handled";
               }).toList();
-              if (incidentIdToOpen != null) {
+              if (incidentIdToOpen != null &&
+                  handledItems.any((e) => e.key == incidentIdToOpen)) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  final index = handledItems.indexWhere(
+                  final incident = handledItems.firstWhere(
                     (e) => e.key == incidentIdToOpen,
                   );
 
-                  if (index != -1) {
-                    final incident = handledItems[index].value;
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => IncidentDetailsPage(
-                          title: incident["type"] ?? "Unknown",
-                          code: handledItems[index].key,
-                          time: incident["timestamp"] ?? "",
-                          status: "Handled",
-                          incidentId: handledItems[index].key,
-                        ),
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => IncidentDetailsPage(
+                        title: incident.value["type"] ?? "Unknown",
+                        code: incident.key,
+                        time: incident.value["timestamp"] ?? "",
+                        status: "Handled",
+                        incidentId: incident.key,
+                        userId: userId,
                       ),
-                    );
-                  }
+                    ),
+                  );
                 });
               }
 
@@ -69,10 +68,11 @@ class HandledPage extends StatelessWidget {
 
                   return buildItem(
                     context,
-                    incident['type'] ?? "",
-                    incident['incidentId'] ?? "",
+                    incident['type'] ?? "Unknown",
+                    e.key,
                     incident['timestamp'] ?? "",
-                    e.key, // ✅ incidentId الصح
+                    e.key,
+                    userId,
                   );
                 }).toList(),
               );
@@ -172,6 +172,7 @@ Widget buildItem(
   String code,
   String time,
   String incidentId,
+  String userId,
 ) {
   return GestureDetector(
     onTap: () {
@@ -184,6 +185,7 @@ Widget buildItem(
             time: time,
             status: "Handled",
             incidentId: incidentId,
+            userId: userId,
           ),
         ),
       );

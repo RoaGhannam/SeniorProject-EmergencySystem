@@ -13,6 +13,7 @@ class IncidentDetailsPage extends StatelessWidget {
   final String time;
   final String status;
   final String incidentId;
+  final String userId;
 
   const IncidentDetailsPage({
     super.key,
@@ -21,6 +22,7 @@ class IncidentDetailsPage extends StatelessWidget {
     required this.time,
     required this.status,
     required this.incidentId,
+    required this.userId,
   });
 
   @override
@@ -286,18 +288,40 @@ class IncidentDetailsPage extends StatelessWidget {
 
                           if (isActive) {
                             await ref.update({"status": "Responding"});
-                            Navigator.pop(context, "responding");
+
+Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+    builder: (_) => IncidentDetailsPage(
+      title: title,
+      code: code,
+      time: time,
+      status: "Responding",
+      incidentId: incidentId,
+      userId: userId,
+    ),
+  ),
+);
                           } else if (isResponding) {
                             await ref.update({"status": "Handled"});
-                            Navigator.pop(context, "handled");
+
+Navigator.pushReplacement(
+  context,
+  MaterialPageRoute(
+    builder: (_) => IncidentDetailsPage(
+      title: title,
+      code: code,
+      time: time,
+      status: "Handled",
+      incidentId: incidentId,
+      userId: userId,
+    ),
+  ),
+);
                           } else if (isHandled) {
-                            Navigator.pushAndRemoveUntil(
+                            Navigator.popUntil(
                               context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    DashboardPage(userId: "testUser"),
-                              ),
-                              (route) => false,
+                              (route) => route.isFirst,
                             );
                           }
                         },
