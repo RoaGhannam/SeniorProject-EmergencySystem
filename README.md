@@ -15,3 +15,7 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+ # project slides : [RoadGuard Emergency Vision System (1)  -  Repaired.pdf](https://github.com/user-attachments/files/30186016/RoadGuard.Emergency.Vision.System.1.-.Repaired.pdf)
+#project document: [Intelligent_vision-based_emergency_detection_and_action_system-Senior Project .pdf](https://github.com/user-attachments/files/30186044/Intelligent_vision-based_emergency_detection_and_action_system-Senior.Project.pdf)
+
+
